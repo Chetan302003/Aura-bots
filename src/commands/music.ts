@@ -53,7 +53,8 @@ export default {
                         leaveOnEmpty: false,
                         leaveOnEnd: false,
                         leaveOnStop: true,
-                        repeatMode: 2 // QueueRepeat
+                        repeatMode: 2, // QueueRepeat
+                        selfDeaf: false
                     }
                 });
 

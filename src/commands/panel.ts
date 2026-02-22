@@ -13,16 +13,17 @@ export default {
             .setFooter({ text: 'Aura Music System' });
 
         const row1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
-            new ButtonBuilder().setCustomId('music_playpause').setEmoji('⏯️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('music_skip').setEmoji('⏭️').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('music_stop').setEmoji('⏹️').setStyle(ButtonStyle.Danger),
-            new ButtonBuilder().setCustomId('music_loop').setEmoji('🔁').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('music_shuffle').setEmoji('🔀').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_previous').setLabel('Previous').setEmoji('⏮️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_playpause').setLabel('Play/Pause').setEmoji('⏯️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_skip').setLabel('Skip').setEmoji('⏭️').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_stop').setLabel('Stop').setEmoji('⏹️').setStyle(ButtonStyle.Danger),
+            new ButtonBuilder().setCustomId('music_loop').setLabel('Loop').setEmoji('🔁').setStyle(ButtonStyle.Secondary),
         );
 
         const row2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
-            new ButtonBuilder().setCustomId('music_voldown').setEmoji('🔉').setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder().setCustomId('music_volup').setEmoji('🔊').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_shuffle').setLabel('Shuffle').setEmoji('🔀').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_voldown').setLabel('Vol -10%').setEmoji('🔉').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('music_volup').setLabel('Vol +10%').setEmoji('🔊').setStyle(ButtonStyle.Secondary),
         );
 
         await interaction.reply({ embeds: [embed], components: [row1, row2] });
