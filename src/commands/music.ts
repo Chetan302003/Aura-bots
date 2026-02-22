@@ -17,6 +17,22 @@ export default {
         .addSubcommand(subcommand =>
             subcommand.setName('stop')
                 .setDescription('Stop music and disconnect')
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('next')
+                .setDescription('Skip to the next song')
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('previous')
+                .setDescription('Play the previous song')
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('pause')
+                .setDescription('Pause the music')
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName('resume')
+                .setDescription('Resume the music')
         ),
     async execute(interaction: ChatInputCommandInteraction) {
         await interaction.deferReply();
@@ -45,8 +61,16 @@ export default {
                 query = 'https://www.youtube.com/watch?v=jfKfPfyJRdk'; // Fallback / default stream
             }
 
+            // Intercept custom Apple Music Playlists (pl.u-) which are blocked by Apple Developer API
+            if (query.includes('apple.com') && query.includes('pl.u-')) {
+                await interaction.followUp(`⚠️ **Apple Music Custom Playlist Detected**\n\nApple Music actively blocks third-party bots from reading user-made \`pl.u-\` playlists due to their strict Developer API restrictions. (Only paid enterprise bots can bypass this).\n\n**Quick Fix:** Use a free site like [TuneMyMusic.com](https://www.tunemymusic.com) to instantly copy your Apple playlist to **Spotify** or **YouTube**, then paste that new link here!`);
+                return;
+            }
+
             try {
-                const { track } = await player.play(voiceChannel, query, {
+                // `player.play` automatically handles both starting new sessions AND enqueuing tracks
+                // if a session is already active in that voice channel.
+                const { track, queue } = await player.play(voiceChannel, query, {
                     nodeOptions: {
                         metadata: interaction,
                         volume: 50,
@@ -58,7 +82,11 @@ export default {
                     }
                 });
 
-                await interaction.followUp(`🎶 Now playing: **${track.title}** (24/7 Loop enabled)`);
+                if (queue.isPlaying() && queue.currentTrack !== track) {
+                    await interaction.followUp(`📝 Added to queue: **${track.title}**`);
+                } else {
+                    await interaction.followUp(`🎶 Now playing: **${track.title}** (24/7 Loop enabled)`);
+                }
             } catch (e: any) {
                 console.error(e);
                 if (e.message?.includes('No results found') || e.message?.includes('ERR_NO_RESULT')) {
@@ -78,6 +106,55 @@ export default {
             }
             queue.delete();
             await interaction.followUp('🛑 Music stopped and disconnected.');
+            return;
+        }
+
+        if (subcommand === 'next') {
+            const queue = player.nodes.get(interaction.guildId!);
+            if (!queue || !queue.isPlaying()) {
+                await interaction.followUp({ content: 'I am not playing anything!' });
+                return;
+            }
+            queue.node.skip();
+            await interaction.followUp('⏭️ Skipped the current track.');
+            return;
+        }
+
+        if (subcommand === 'previous') {
+            const queue = player.nodes.get(interaction.guildId!);
+            if (!queue || !queue.isPlaying()) {
+                await interaction.followUp({ content: 'I am not playing anything!' });
+                return;
+            }
+
+            if (!queue.history.previousTrack) {
+                await interaction.followUp('⚠️ There is no previous track found! (If you just started playing or are using a single-song 24/7 loop, history is empty).');
+            } else {
+                await queue.history.previous();
+                await interaction.followUp('⏮️ Playing the previous track.');
+            }
+            return;
+        }
+
+        if (subcommand === 'pause') {
+            const queue = player.nodes.get(interaction.guildId!);
+            if (!queue || !queue.isPlaying()) {
+                await interaction.followUp({ content: 'I am not playing anything!' });
+                return;
+            }
+            queue.node.setPaused(true);
+            await interaction.followUp('⏸️ Paused the music.');
+            return;
+        }
+
+        if (subcommand === 'resume') {
+            const queue = player.nodes.get(interaction.guildId!);
+            if (!queue || !queue.isPlaying()) {
+                await interaction.followUp({ content: 'I am not playing anything!' });
+                return;
+            }
+            queue.node.setPaused(false);
+            await interaction.followUp('▶️ Resumed the music.');
             return;
         }
     },
