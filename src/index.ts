@@ -3,6 +3,19 @@ import { config } from './config';
 import { ClientWithCommands } from './types';
 import fs from 'fs';
 import path from 'path';
+import http from 'http';
+
+// --- DUMMY HTTP SERVER FOR RENDER STARTUP HEALTH CHECKS ---
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('Aura Bot is online!');
+});
+// Render assigns a random port through process.env.PORT
+const port = process.env.PORT || 10000;
+server.listen(port, () => {
+    console.log(`[READY] Render Health-Check Server listening on port ${port}`);
+});
+// -----------------------------------------------------------
 
 // Initialize the Discord Client
 const client = new Client({
