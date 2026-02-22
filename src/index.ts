@@ -15,6 +15,12 @@ const client = new Client({
     ]
 }) as ClientWithCommands;
 
+import { Player } from 'discord-player';
+import { DefaultExtractors } from '@discord-player/extractor';
+
+const player = new Player(client);
+player.extractors.loadMulti(DefaultExtractors).then(() => console.log('Extractors loaded successfully'));
+
 client.commands = new Collection();
 
 // Load Commands
