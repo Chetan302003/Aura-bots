@@ -10,11 +10,6 @@ const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end('Aura Bot is online!');
 });
-// Render assigns a random port through process.env.PORT
-const port = process.env.PORT || 10000;
-server.listen(port, () => {
-    console.log(`[READY] Render Health-Check Server listening on port ${port}`);
-});
 // -----------------------------------------------------------
 
 // Initialize the Discord Client
@@ -99,10 +94,20 @@ if (fs.existsSync(eventsPath)) {
 }
 
 // Log in to Discord
-console.log("DISCORD_TOKEN exists:", !!config.DISCORD_TOKEN);
-console.log("Token length:", config.DISCORD_TOKEN?.length);
-console.log("DISCORD_TOKEN exists:", !!process.env.DISCORD_TOKEN);
-client.login(config.DISCORD_TOKEN).catch(err => {
-    console.error('[ERROR] Failed to login to Discord.', err);
+console.log("Attempting to connect to Discord...");
 
+client.login(config.DISCORD_TOKEN).then(() => {
+    console.log(`[READY] Successfully authenticated with Discord!`);
+
+    // --- START DUMMY HTTP SERVER FOR RENDER HEALTH CHECKS ---
+    // We start this only AFTER Discord authenticates successfully,
+    // so Render does not kill the boot process early.
+    const port = process.env.PORT || 10000;
+    server.listen(port, () => {
+        console.log(`[READY] Render Health-Check Server listening on port ${port}`);
+    });
+    // -----------------------------------------------------------
+
+}).catch(err => {
+    console.error('[ERROR] Failed to login to Discord.', err);
 });
