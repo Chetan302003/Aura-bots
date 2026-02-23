@@ -25,15 +25,23 @@ const rest = new REST({ version: '10' }).setToken(config.DISCORD_TOKEN);
 // and deploy your commands!
 (async () => {
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+        const isGlobal = process.argv.includes('--global');
 
-        // The put method is used to fully refresh all commands in the guild with the current set
-        const data: any = await rest.put(
-            Routes.applicationGuildCommands(config.CLIENT_ID, config.GUILD_ID),
-            { body: commands },
-        );
-
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        if (isGlobal) {
+            console.log(`Started refreshing ${commands.length} application (/) commands GLOBALLY.`);
+            const data: any = await rest.put(
+                Routes.applicationCommands(config.CLIENT_ID),
+                { body: commands },
+            );
+            console.log(`Successfully reloaded ${data.length} global application (/) commands. (Note: Global commands can take up to 1 hour to sync across all servers).`);
+        } else {
+            console.log(`Started refreshing ${commands.length} application (/) commands to GUILD ${config.GUILD_ID}.`);
+            const data: any = await rest.put(
+                Routes.applicationGuildCommands(config.CLIENT_ID, config.GUILD_ID),
+                { body: commands },
+            );
+            console.log(`Successfully reloaded ${data.length} local application (/) commands.`);
+        }
     } catch (error) {
         // And of course, make sure you catch and log any errors!
         console.error(error);
