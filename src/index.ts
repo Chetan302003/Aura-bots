@@ -69,4 +69,6 @@ if (fs.existsSync(eventsPath)) {
 // Log in to Discord
 client.login(config.DISCORD_TOKEN).catch(err => {
     console.error('[ERROR] Failed to login to Discord.', err);
+    console.log("DISCORD_TOKEN exists:", !!config.DISCORD_TOKEN);
+    console.log("Token length:", config.DISCORD_TOKEN?.length);
 });
