@@ -55,10 +55,12 @@ export default {
 
         if (subcommand === 'play') {
             let query = interaction.options.getString('query');
+            let isDefaultRadio = false;
 
             // Default 24/7 playlist if no query is provided (Example Lofi hip hop radio - beats to relax/study to)
             if (!query) {
                 query = 'https://www.youtube.com/watch?v=jfKfPfyJRdk'; // Fallback / default stream
+                isDefaultRadio = true;
             }
 
             // Intercept custom Apple Music Playlists (pl.u-) which are blocked by Apple Developer API
@@ -74,18 +76,21 @@ export default {
                     nodeOptions: {
                         metadata: interaction,
                         volume: 50,
-                        leaveOnEmpty: false,
-                        leaveOnEnd: false,
+                        leaveOnEmpty: true,
+                        leaveOnEmptyCooldown: 300000,
+                        leaveOnEnd: true,
+                        leaveOnEndCooldown: 300000,
                         leaveOnStop: true,
-                        repeatMode: 2, // QueueRepeat
-                        selfDeaf: false
-                    }
+                        repeatMode: isDefaultRadio ? 2 : 0, // 2 = QueueRepeat, 0 = Off
+                        selfDeaf: true
+                    },
+                    searchEngine: 'auto'
                 });
 
                 if (queue.isPlaying() && queue.currentTrack !== track) {
                     await interaction.followUp(`📝 Added to queue: **${track.title}**`);
                 } else {
-                    await interaction.followUp(`🎶 Now playing: **${track.title}** (24/7 Loop enabled)`);
+                    await interaction.followUp(`🎶 Preparing to play: **${track.title}**\n*(Control panel will appear shortly!)*`);
                 }
             } catch (e: any) {
                 console.error(e);

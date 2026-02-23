@@ -32,9 +32,41 @@ import { Player } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
 
 const player = new Player(client);
-player.extractors.loadMulti(DefaultExtractors).then(() => console.log('Extractors loaded successfully'));
+
+player.extractors.loadMulti(DefaultExtractors).then(() => {
+    console.log('Extractors loaded successfully');
+});
+
+// Create player event listeners to handle automated Next/Previous and queue progressions
+player.events.on('playerStart', async (queue, track) => {
+    try {
+        const metadata = queue.metadata as any;
+        const channel = metadata?.channel || queue.channel;
+
+        if (channel && channel.isTextBased()) {
+            const { generatePanelEmbed, generatePanelComponents } = require('./commands/panel');
+
+            // Delete previous panel if it exists
+            if (metadata.currentPanel) {
+                await metadata.currentPanel.delete().catch(() => { });
+            }
+
+            const currentTitle = track.title || 'Unknown Audio';
+            const nextTitle = queue.history.nextTrack?.title || 'None';
+
+            const embed = generatePanelEmbed(currentTitle, nextTitle);
+            const components = generatePanelComponents();
+
+            const pnl = await channel.send({ embeds: [embed], components: components });
+            metadata.currentPanel = pnl;
+        }
+    } catch (e) {
+        console.error('Error sending playerStart panel:', e);
+    }
+});
 
 client.commands = new Collection();
+
 
 // Load Commands
 const commandsPath = path.join(__dirname, 'commands');

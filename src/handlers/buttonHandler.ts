@@ -158,8 +158,8 @@ export async function handleButtonInteraction(interaction: ButtonInteraction) {
                     responseMessage = queue.node.isPaused() ? '⏸️ Paused the music.' : '▶️ Resumed the music.';
                     break;
                 case 'music_previous':
-                    if (!queue.history.previousTrack) {
-                        responseMessage = 'There is no previous track in the history!';
+                    if (queue.history.tracks.data.length === 0) {
+                        responseMessage = '⚠️ There is no previous track in the history!';
                     } else {
                         await queue.history.previous();
                         responseMessage = '⏮️ Playing the previous track.';
