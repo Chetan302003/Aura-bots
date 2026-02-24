@@ -3,6 +3,13 @@ import { config } from '../config';
 
 export async function handleModalInteraction(interaction: ModalSubmitInteraction) {
     if (interaction.customId === 'ticket_close_modal') {
+        const member = interaction.member as import('discord.js').GuildMember;
+        const hasRole = member.roles.cache.has(config.ROLE_EVENT_TEAM) || member.roles.cache.has(config.ROLE_MANAGEMENT_TEAM);
+
+        if (!hasRole) {
+            return interaction.reply({ content: 'Only the Event Team or Management Team can close tickets.', ephemeral: true });
+        }
+
         const reason = interaction.fields.getTextInputValue('close_reason');
         const channel = interaction.channel as TextChannel;
         if (!channel) return;

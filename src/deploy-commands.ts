@@ -26,21 +26,22 @@ const rest = new REST({ version: '10' }).setToken(config.DISCORD_TOKEN);
 (async () => {
     try {
         const isGlobal = process.argv.includes('--global');
+        const isClear = process.argv.includes('--clear');
 
         if (isGlobal) {
-            console.log(`Started refreshing ${commands.length} application (/) commands GLOBALLY.`);
+            console.log(`${isClear ? 'Clearing' : 'Refreshing'} ${isClear ? '' : commands.length} application (/) commands GLOBALLY.`);
             const data: any = await rest.put(
                 Routes.applicationCommands(config.CLIENT_ID),
-                { body: commands },
+                { body: isClear ? [] : commands },
             );
-            console.log(`Successfully reloaded ${data.length} global application (/) commands. (Note: Global commands can take up to 1 hour to sync across all servers).`);
+            console.log(`Successfully ${isClear ? 'cleared' : 'reloaded'} global application (/) commands.`);
         } else {
-            console.log(`Started refreshing ${commands.length} application (/) commands to GUILD ${config.GUILD_ID}.`);
+            console.log(`${isClear ? 'Clearing' : 'Refreshing'} ${isClear ? '' : commands.length} application (/) commands to GUILD ${config.GUILD_ID}.`);
             const data: any = await rest.put(
                 Routes.applicationGuildCommands(config.CLIENT_ID, config.GUILD_ID),
-                { body: commands },
+                { body: isClear ? [] : commands },
             );
-            console.log(`Successfully reloaded ${data.length} local application (/) commands.`);
+            console.log(`Successfully ${isClear ? 'cleared' : 'reloaded'} local application (/) commands.`);
         }
     } catch (error) {
         // And of course, make sure you catch and log any errors!
