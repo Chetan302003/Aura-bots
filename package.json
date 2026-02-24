@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "deploy-commands": "node dist/deploy-commands.js"
+    "deploy-commands": "node dist/deploy-commands.js",
+    "delete-commands": "node dist/delete-commands.js"
   },
   "keywords": [],
   "author": "",
