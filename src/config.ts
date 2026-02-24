@@ -13,4 +13,5 @@ export const config = {
 
     // Roles map for mentions when ticket opens
     ROLE_EVENT_TEAM: process.env.ROLE_EVENT_TEAM || '',
+    ROLE_MANAGEMENT_TEAM: process.env.ROLE_MANAGEMENT_TEAM || '',
 };

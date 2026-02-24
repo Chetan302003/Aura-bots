@@ -69,6 +69,13 @@ export async function handleButtonInteraction(interaction: ButtonInteraction) {
     }
 
     if (customId === 'ticket_close') {
+        const member = interaction.member as import('discord.js').GuildMember;
+        const hasRole = member.roles.cache.has(config.ROLE_EVENT_TEAM) || member.roles.cache.has(config.ROLE_MANAGEMENT_TEAM);
+
+        if (!hasRole) {
+            return interaction.reply({ content: 'Only the Event Team or Management Team can close tickets.', ephemeral: true });
+        }
+
         const modal = new ModalBuilder()
             .setCustomId('ticket_close_modal')
             .setTitle('Close Ticket');
