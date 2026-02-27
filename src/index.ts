@@ -105,6 +105,7 @@ console.log("Attempting to connect to Discord...");
 
 client.login(config.DISCORD_TOKEN).then(() => {
     console.log(`[READY] Successfully authenticated with Discord!`);
+    console.log("Token exists?", !!config.DISCORD_TOKEN);
 
     // -----------------------------------------------------------
 
