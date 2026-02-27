@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 export const config = {
-    DISCORD_TOKEN: process.env.DISCORD_TOKEN || '',
+    DISCORD_TOKEN: process.env.DISCORD_TOKEN,
     CLIENT_ID: process.env.CLIENT_ID || '',
     GUILD_ID: process.env.GUILD_ID || '',
     CONVOY_CHANNEL_ID: process.env.CONVOY_CHANNEL_ID || '',
