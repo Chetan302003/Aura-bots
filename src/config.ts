@@ -9,9 +9,14 @@ function requireEnv(name: string): string {
 }
 
 export const config = {
+    // REQUIRED
     DISCORD_TOKEN: requireEnv("DISCORD_TOKEN"),
     CLIENT_ID: requireEnv("CLIENT_ID"),
-    GUILD_ID: process.env.GUILD_ID, // optional
+
+    // If you use guild commands, make this required too
+    GUILD_ID: requireEnv("GUILD_ID"),
+
+    // OPTIONAL (only required if feature used)
     CONVOY_CHANNEL_ID: process.env.CONVOY_CHANNEL_ID,
 
     TICKET_CATEGORY_SLOT_BOOKING: process.env.TICKET_CATEGORY_SLOT_BOOKING,
