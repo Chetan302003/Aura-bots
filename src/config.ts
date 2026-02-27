@@ -9,23 +9,18 @@ function requireEnv(name: string): string {
 }
 
 export const config = {
-    // REQUIRED
     DISCORD_TOKEN: requireEnv("DISCORD_TOKEN"),
     CLIENT_ID: requireEnv("CLIENT_ID"),
-
-    // If you use guild commands, make this required too
     GUILD_ID: requireEnv("GUILD_ID"),
+    CONVOY_CHANNEL_ID: requireEnv("CONVOY_CHANNEL_ID"),
 
-    // OPTIONAL (only required if feature used)
-    CONVOY_CHANNEL_ID: process.env.CONVOY_CHANNEL_ID,
+    TICKET_CATEGORY_SLOT_BOOKING: requireEnv("TICKET_CATEGORY_SLOT_BOOKING"),
+    TICKET_CATEGORY_EVENT_INVITE: requireEnv("TICKET_CATEGORY_EVENT_INVITE"),
+    TICKET_LOG_CHANNEL: requireEnv("TICKET_LOG_CHANNEL"),
 
-    TICKET_CATEGORY_SLOT_BOOKING: process.env.TICKET_CATEGORY_SLOT_BOOKING,
-    TICKET_CATEGORY_EVENT_INVITE: process.env.TICKET_CATEGORY_EVENT_INVITE,
-    TICKET_LOG_CHANNEL: process.env.TICKET_LOG_CHANNEL,
-
-    ROLE_EVENT_TEAM: process.env.ROLE_EVENT_TEAM,
-    ROLE_MANAGEMENT_TEAM: process.env.ROLE_MANAGEMENT_TEAM,
-    ROLE_HR_TEAM: process.env.ROLE_HR_TEAM,
+    ROLE_EVENT_TEAM: requireEnv("ROLE_EVENT_TEAM"),
+    ROLE_MANAGEMENT_TEAM: requireEnv("ROLE_MANAGEMENT_TEAM"),
+    ROLE_HR_TEAM: requireEnv("ROLE_HR_TEAM"),
 };
 
 // import 'dotenv/config';
