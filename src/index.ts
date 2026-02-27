@@ -92,20 +92,19 @@ if (fs.existsSync(eventsPath)) {
         }
     }
 }
-
+    // --- START DUMMY HTTP SERVER FOR RENDER HEALTH CHECKS ---
+    // I am start this only AFTER Discord authenticates successfully,
+    // so Render does not kill the boot process early.
+    const port = process.env.PORT || 10000;
+    server.listen(port, () => {
+        console.log(`[READY] Render Health-Check Server listening on port ${port}`);
+    });
 // Log in to Discord
 console.log("Attempting to connect to Discord...");
 
 client.login(config.DISCORD_TOKEN).then(() => {
     console.log(`[READY] Successfully authenticated with Discord!`);
 
-    // --- START DUMMY HTTP SERVER FOR RENDER HEALTH CHECKS ---
-    // We start this only AFTER Discord authenticates successfully,
-    // so Render does not kill the boot process early.
-    const port = process.env.PORT || 10000;
-    server.listen(port, () => {
-        console.log(`[READY] Render Health-Check Server listening on port ${port}`);
-    });
     // -----------------------------------------------------------
 
 }).catch(err => {
