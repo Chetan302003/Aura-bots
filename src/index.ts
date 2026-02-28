@@ -10,11 +10,11 @@ const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end('Aura Bot is online!');
 });
-    const port = process.env.PORT || 10000;
-    server.listen(port, () => {
-        console.log(`[READY] Render Health-Check Server listening on port ${port}`);
-    });
-// -----------------------------------------------------------
+const port = process.env.PORT || 10000;
+server.listen(port, () => {
+    console.log(`[READY] Render Health-Check Server listening on port ${port}`);
+});
+// ---------------------------------------------------------
 
 // Initialize the Discord Client
 const client = new Client({
@@ -96,9 +96,9 @@ if (fs.existsSync(eventsPath)) {
         }
     }
 }
-    // --- START DUMMY HTTP SERVER FOR RENDER HEALTH CHECKS ---
-    // I am start this only AFTER Discord authenticates successfully,
-    // so Render does not kill the boot process early.
+// --- START DUMMY HTTP SERVER FOR RENDER HEALTH CHECKS ---
+// I am start this only AFTER Discord authenticates successfully,
+// so Render does not kill the boot process early.
 
 // Log in to Discord
 console.log("Attempting to connect to Discord...");
