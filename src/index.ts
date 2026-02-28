@@ -1,4 +1,9 @@
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
+
+// Force Undici (the discord.js fetch library) to only use IPv4
+import { setGlobalDispatcher, Agent } from 'undici';
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
+
 import * as dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
