@@ -1,4 +1,7 @@
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
+import * as dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import { config } from './config';
 import { ClientWithCommands } from './types';
 import fs from 'fs';
@@ -102,6 +105,8 @@ if (fs.existsSync(eventsPath)) {
 
 // Log in to Discord
 console.log("Attempting to connect to Discord...");
+
+client.on('debug', console.log);
 
 client.login(config.DISCORD_TOKEN).then(() => {
     console.log(`[READY] Successfully authenticated with Discord!`);
