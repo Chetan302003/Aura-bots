@@ -10,9 +10,9 @@ const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end('Aura Bot is online!');
 });
-const port = process.env.PORT || 10000;
-server.listen(port, () => {
-    console.log(`[READY] Render Health-Check Server listening on port ${port}`);
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 10000;
+server.listen(port, "0.0.0.0", () => {
+    console.log(`[READY] Render Health-Check Server listening on 0.0.0.0:${port}`);
 });
 // ---------------------------------------------------------
 
@@ -34,7 +34,7 @@ const player = new Player(client);
 
 player.extractors.loadMulti(DefaultExtractors).then(() => {
     console.log('Extractors loaded successfully');
-});
+}).catch(e => console.error('Failed to load extractors:', e));
 
 // Create player event listeners to handle automated Next/Previous and queue progressions
 player.events.on('playerStart', async (queue, track) => {
