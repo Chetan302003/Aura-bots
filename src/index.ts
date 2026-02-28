@@ -1,9 +1,4 @@
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
-
-// Force Undici (the discord.js fetch library) to only use IPv4
-import { setGlobalDispatcher, Agent } from 'undici';
-setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
-
 import * as dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
@@ -24,6 +19,8 @@ server.listen(port, "0.0.0.0", () => {
 });
 // ---------------------------------------------------------
 
+import { Agent } from 'undici';
+
 // Initialize the Discord Client
 const client = new Client({
     intents: [
@@ -32,7 +29,20 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.GuildMessageReactions
-    ]
+    ],
+    rest: {
+        // Force the REST manager to use a dispatcher that strictly resolves IPv4
+        agent: new Agent({
+            connect: {
+                timeout: 60_000,
+                // Passing a custom lookup function to forcefully prioritize ipv4
+                lookup: (hostname: string, options: any, callback: any) => {
+                    const fallbackOptions = typeof options === 'object' ? { ...options, family: 4 } : { family: 4 };
+                    dns.lookup(hostname, fallbackOptions, callback);
+                }
+            }
+        }) as any
+    }
 }) as ClientWithCommands;
 
 import { Player } from 'discord-player';
