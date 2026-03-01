@@ -24,7 +24,19 @@ server.listen(port, "0.0.0.0", () => {
 });
 // ---------------------------------------------------------
 
-import { Agent, buildConnector } from 'undici';
+import { Agent, buildConnector, setGlobalDispatcher } from 'undici';
+
+// Globally force Undici (Node 20 fetch engine) to prioritize IPv4
+// This is critical for Render deployments because of Discord's IPv6 routing
+setGlobalDispatcher(new Agent({
+    connect: buildConnector({
+        timeout: 60_000,
+        lookup: (hostname: string, options: any, callback: any) => {
+            const fallbackOptions = typeof options === 'object' ? { ...options, family: 4 } : { family: 4 };
+            dns.lookup(hostname, fallbackOptions, callback);
+        }
+    })
+}));
 
 // Initialize the Discord Client
 const client = new Client({
@@ -34,20 +46,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.GuildMessageReactions
-    ],
-    rest: {
-        // Force the REST manager to use a dispatcher that strictly resolves IPv4
-        agent: new Agent({
-            connect: buildConnector({
-                timeout: 60_000,
-                // Passing a custom lookup function to forcefully prioritize ipv4
-                lookup: (hostname: string, options: any, callback: any) => {
-                    const fallbackOptions = typeof options === 'object' ? { ...options, family: 4 } : { family: 4 };
-                    dns.lookup(hostname, fallbackOptions, callback);
-                }
-            })
-        }) as any
-    }
+    ]
 }) as ClientWithCommands;
 
 import { Player } from 'discord-player';
