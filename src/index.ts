@@ -10,8 +10,13 @@ import http from 'http';
 
 // --- DUMMY HTTP SERVER FOR RENDER STARTUP HEALTH CHECKS ---
 const server = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end('Aura Bot is online!');
+    if (req.url === '/ping') {
+        res.writeHead(200);
+        res.end('pong');
+    } else {
+        res.writeHead(200);
+        res.end('Aura Bot is online!');
+    }
 });
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 10000;
 server.listen(port, "0.0.0.0", () => {
