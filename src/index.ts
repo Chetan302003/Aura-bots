@@ -24,7 +24,7 @@ server.listen(port, "0.0.0.0", () => {
 });
 // ---------------------------------------------------------
 
-import { Agent } from 'undici';
+import { Agent, buildConnector } from 'undici';
 
 // Initialize the Discord Client
 const client = new Client({
@@ -38,14 +38,14 @@ const client = new Client({
     rest: {
         // Force the REST manager to use a dispatcher that strictly resolves IPv4
         agent: new Agent({
-            connect: {
+            connect: buildConnector({
                 timeout: 60_000,
                 // Passing a custom lookup function to forcefully prioritize ipv4
                 lookup: (hostname: string, options: any, callback: any) => {
                     const fallbackOptions = typeof options === 'object' ? { ...options, family: 4 } : { family: 4 };
                     dns.lookup(hostname, fallbackOptions, callback);
                 }
-            }
+            })
         }) as any
     }
 }) as ClientWithCommands;
