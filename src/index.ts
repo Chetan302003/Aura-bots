@@ -24,19 +24,19 @@ server.listen(port, "0.0.0.0", () => {
 });
 // ---------------------------------------------------------
 
-import { Agent, buildConnector, setGlobalDispatcher } from 'undici';
+import net from 'net';
 
-// Globally force Undici (Node 20 fetch engine) to prioritize IPv4
-// This is critical for Render deployments because of Discord's IPv6 routing
-setGlobalDispatcher(new Agent({
-    connect: buildConnector({
-        timeout: 60_000,
-        lookup: (hostname: string, options: any, callback: any) => {
-            const fallbackOptions = typeof options === 'object' ? { ...options, family: 4 } : { family: 4 };
-            dns.lookup(hostname, fallbackOptions, callback);
-        }
-    })
-}));
+// --- RENDER IPV6 FIX ---
+// Force all underlying network sockets to communicate via IPv4.
+// Render has ongoing issues establishing outgoing IPv6 connections,
+// which causes discord.js to silently freeze at "Preparing to connect to the gateway"
+const originalConnect = net.connect;
+(net as any).connect = function (...args: any[]) {
+    if (args[0] && typeof args[0] === 'object') {
+        args[0].family = 4;
+    }
+    return (originalConnect as any).apply(this, args);
+};
 
 // Initialize the Discord Client
 const client = new Client({
