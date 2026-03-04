@@ -24,19 +24,7 @@ server.listen(port, "0.0.0.0", () => {
 });
 // ---------------------------------------------------------
 
-import net from 'net';
-
-// --- RENDER IPV6 FIX ---
-// Force all underlying network sockets to communicate via IPv4.
-// Render has ongoing issues establishing outgoing IPv6 connections,
-// which causes discord.js to silently freeze at "Preparing to connect to the gateway"
-const originalConnect = net.connect;
-(net as any).connect = function (...args: any[]) {
-    if (args[0] && typeof args[0] === 'object') {
-        args[0].family = 4;
-    }
-    return (originalConnect as any).apply(this, args);
-};
+// Native Node CLI flag has been added instead of runtime patches for IPv4
 
 // Initialize the Discord Client
 const client = new Client({
