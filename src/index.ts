@@ -113,14 +113,16 @@ if (fs.existsSync(eventsPath)) {
 // Log in to Discord
 console.log("Attempting to connect to Discord...");
 
-client.on('debug', console.log);
-
-client.login(config.DISCORD_TOKEN).then(() => {
-    console.log(`[READY] Successfully authenticated with Discord!`);
-    console.log("Token exists?", !!config.DISCORD_TOKEN);
-
-    // -----------------------------------------------------------
-
-}).catch(err => {
-    console.error('[ERROR] Failed to login to Discord.', err);
-});
+player.extractors.loadMulti(DefaultExtractors)
+    .then(() => {
+        console.log('Extractors loaded successfully');
+        return client.login(config.DISCORD_TOKEN);
+    })
+    .then(() => {
+        console.log('[READY] Successfully authenticated with Discord!');
+        console.log('Token exists?', !!config.DISCORD_TOKEN);
+    })
+    .catch(err => {
+        console.error('[ERROR] Failed to start bot:', err);
+        process.exit(1); // Force Render to show a crash log
+    });
