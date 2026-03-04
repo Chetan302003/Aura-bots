@@ -111,18 +111,40 @@ if (fs.existsSync(eventsPath)) {
 // so Render does not kill the boot process early.
 
 // Log in to Discord
-console.log("Attempting to connect to Discord...");
+import https from 'https';
+
+function testDiscordConnectivity(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        console.log('[NET] Testing connectivity to discord.com...');
+        const req = https.get('https://discord.com/api/v10/gateway', (res) => {
+            console.log(`[NET] discord.com responded with status: ${res.statusCode}`);
+            resolve();
+        });
+        req.on('error', (err) => {
+            console.error('[NET] Cannot reach discord.com:', err.message);
+            reject(err);
+        });
+        req.setTimeout(10000, () => {
+            console.error('[NET] Connection to discord.com timed out!');
+            req.destroy();
+            reject(new Error('timeout'));
+        });
+    });
+}
 
 player.extractors.loadMulti(DefaultExtractors)
     .then(() => {
         console.log('Extractors loaded successfully');
+        return testDiscordConnectivity();
+    })
+    .then(() => {
+        console.log('[NET] Connectivity OK, logging into Discord...');
         return client.login(config.DISCORD_TOKEN);
     })
     .then(() => {
         console.log('[READY] Successfully authenticated with Discord!');
-        console.log('Token exists?', !!config.DISCORD_TOKEN);
     })
     .catch(err => {
         console.error('[ERROR] Failed to start bot:', err);
-        process.exit(1); // Force Render to show a crash log
+        process.exit(1);
     });
